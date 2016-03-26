@@ -29,6 +29,8 @@
 
 Bool PluginStart(void)
 {
+	VERSIONTYPE versionType = GeGetVersionType();
+
 	// shader plugin examples
 	if (!RegisterGradient())
 		return false;
@@ -100,28 +102,33 @@ Bool PluginStart(void)
 		return false;
 
 	// sculpting tool examples
-	if (!RegisterSculptDrawPolyTool())
-		return false;
-	if (!RegisterSculptPullBrush())
-		return false;
-	if (!RegisterSculptSelectionBrush())
-		return false;
-	if (!RegisterSculptCubesBrush())
-		return false;
-	if (!RegisterSculptGrabBrush())
-		return false;
-	if (!RegisterSculptDrawPolyBrush())
-		return false;
-	if (!RegisterSculptDeformer())
-		return false;
-	if (!RegisterSculptModifiers())
-		return false;
-	if (!RegisterSculptBrushTwist())
-		return false;
-	if (!RegisterSculptBrushMultiStamp())
-		return false;
-	if (!RegisterPaintAdvanced())
-		return false;
+	if ((versionType ==  VERSIONTYPE_STUDIO) || (versionType ==  VERSIONTYPE_BODYPAINT))
+	{
+		if (!RegisterSculptDrawPolyTool())
+			return false;
+		if (!RegisterSculptPullBrush())
+			return false;
+		if (!RegisterSculptSelectionBrush())
+			return false;
+		if (!RegisterSculptCubesBrush())
+			return false;
+		if (!RegisterSculptGrabBrush())
+			return false;
+		if (!RegisterSculptDrawPolyBrush())
+			return false;
+		if (!RegisterSculptDeformer())
+			return false;
+		if (!RegisterSculptModifiers())
+			return false;
+		if (!RegisterSculptBrushTwist())
+			return false;
+		if (!RegisterSculptBrushMultiStamp())
+			return false;
+		if (!RegisterPaintAdvanced())
+			return false;
+		if (!RegisterSculptBrushSpline())
+			return false;
+	}
 
 	// animation plugin example
 	if (!RegisterBlinker())
@@ -161,8 +168,13 @@ Bool PluginStart(void)
 		return false;
 
 	// effector plugin examples, can only be loaded if MoGfx is installed
-	RegisterNoiseEffector();
-	RegisterDropEffector();
+	if ((versionType ==  VERSIONTYPE_BROADCAST) || (versionType ==  VERSIONTYPE_STUDIO))
+	{
+		if (!RegisterNoiseEffector())
+			return false;
+		if (!RegisterDropEffector())
+			return false;
+	}
 
 	// hair examples
 	if (!RegisterDeformerObject())
@@ -186,10 +198,32 @@ Bool PluginStart(void)
 	if (!RegisterGeneratorObject())
 		return false;
 
-	// other examples
-
 	// SnapData example
 	if(!RegisterSnapDataNullSnap())
+		return false;
+
+	// take system example
+	if (!RegisterTakeTestCommmands())
+		return false;
+
+	// String custom GUI example
+	if(!RegisterCustomGUIString())
+		return false;
+
+	// CustomDataType and CustomGUI example
+	if(!RegisterCustomDatatypeCustomGUI())
+		return false;
+
+	// GeDialog example
+	if(!RegisterExampleDialogCommand())
+		return false;
+
+	// ObjectData example showing the use of GetDDescription()
+	if(!RegisterObjectDynamicDescription())
+		return false;
+
+	// ObjectData example showing the use of Get-/SetDParameter() with certain CustomGUIs
+	if(!RegisterGetSetDParameterExample())
 		return false;
 
 	return true;
@@ -231,7 +265,6 @@ Bool PluginMessage(Int32 id, void* data)
 
 		case C4DPL_COMMANDLINEARGS:
 			//sample implementation of command line rendering:
-			//void CommandLineRendering(C4DPL_CommandLineArgs* args);
 			//CommandLineRendering((C4DPL_CommandLineArgs*)data);
 
 			//react to this message to react to command line arguments on startup
